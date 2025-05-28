@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>autozilla Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=Roboto+Mono:wght@400;700&family=Lobster&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            min-height: 100vh;
+            background: url("https://images.unsplash.com/photo-1465146633011-14f8e0781093?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3450&q=80"), #111111;
+            background-size: cover;
+            background-repeat: repeat;
+            animation: scroll 100s linear infinite;
+        }
+        @keyframes scroll {
+            100% {
+                background-position: 0px -400%;
+            }
+        }
+        @media (prefers-reduced-motion) {
+            body {
+                animation: scroll 800s linear infinite;
+            }
+        }
+        .center-container {
+            min-height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .auth-block {
+            background: rgba(255,255,255,0.97);
+            border-radius: 48px;
+            box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0);
+            padding: 64px 56px 56px 56px;
+            min-width: 420px;
+            max-width: 520px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .brand {
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            font-family: 'Lobster', cursive;
+            color: #111;
+        }
+        .auth-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #444;
+            letter-spacing: 1px;
+        }
+        .form-control {
+            background: #f5f5f5;
+            border: none;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            font-size: 1rem;
+            padding: 14px 12px;
+            width: 340px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 2px #4361ee33;
+        }
+        .show-password {
+            font-size: 0.95rem;
+            color: #888;
+            cursor: pointer;
+            user-select: none;
+            margin-left: 6px;
+        }
+        .auth-btn {
+            width: 100%;
+            background: #111;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 14px 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 10px;
+            margin-bottom: 18px;
+            transition: background 0.2s;
+        }
+        .auth-btn:hover {
+            background: #4361ee;
+        }
+        .toggle-form {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+        .toggle-form a {
+            color: #4361ee;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .toggle-form a:hover {
+            text-decoration: underline;
+        }
+        .forgot {
+            color: #111;
+            font-size: 1rem;
+            text-decoration: underline;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .copyright {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.95rem;
+            color: #222;
+            margin-top: 18px;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            .auth-block {
+                min-width: unset;
+                max-width: unset;
+                width: 95vw;
+                padding: 28px 8vw 28px 8vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="center-container">
+        <div class="auth-block" id="authBlock">
+            <div class="brand">autozilla</div>
+            <div class="auth-title" id="authTitle">Login</div>
+            <form id="loginForm" autocomplete="off">
+                <div class="form-group">
+                    <label for="loginUsername">USERNAME</label>
+                    <input type="text" class="form-control" id="loginUsername" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">PASSWORD</label>
+                    <div style="position:relative;">
+                        <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" required>
+                        <span class="show-password" id="togglePassword" style="position:absolute;top:50%;right:16px;transform:translateY(-50%);">Show password <span id="eyeIcon">&#128065;</span></span>
+                    </div>
+                </div>
+                <button type="submit" class="auth-btn">Login</button>
+            </form>
+            <form id="signupForm" style="display:none;" autocomplete="off">
+                <div class="form-group">
+                    <label for="signupName">NAME</label>
+                    <input type="text" class="form-control" id="signupName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupRole">SIGN UP AS:</label>
+                    <select class="form-control" id="signupRole" onchange="toggleDepartmentField()">
+                        <option value="employee">Employee</option>
+                        <option value="manager">Manager</option>
+                    </select>
+                </div>
+                <div class="form-group" id="departmentGroup" style="display: block;">
+                    <label for="signupDepartment">DEPARTMENT:</label>
+                    <select class="form-control" id="signupDepartment">
+                        <option value="">Select Department</option>
+                        <option value="developer">Developer</option>
+                        <option value="tester">Tester</option>
+                        <option value="designer">Designer</option>
+                        <option value="analyst">Business Analyst</option>
+                        <option value="support">Support</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="signupUsername">USERNAME</label>
+                    <input type="text" class="form-control" id="signupUsername" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">PASSWORD</label>
+                    <input type="password" class="form-control" id="signupPassword" placeholder="Choose a password" required>
+                </div>
+                <button type="submit" class="auth-btn">Sign Up</button>
+            </form>
+            <div class="toggle-form" id="toggleFormText">
+                <span id="toggleText">Don't have an account? <a href="#" id="toggleLink">Sign up</a></span>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Show/hide password for login
+        const passwordInput = document.getElementById('loginPassword');
+        const togglePassword = document.getElementById('togglePassword');
+        let passwordVisible = false;
+        togglePassword.addEventListener('click', function() {
+            passwordVisible = !passwordVisible;
+            passwordInput.type = passwordVisible ? 'text' : 'password';
+            togglePassword.firstChild.textContent = passwordVisible ? 'Hide password ' : 'Show password ';
+        });
+
+        // Toggle between login and signup forms
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const authTitle = document.getElementById('authTitle');
+        const toggleText = document.getElementById('toggleText');
+        const toggleLink = document.getElementById('toggleLink');
+        const forgotPassword = document.getElementById('forgotPassword');
+
+        function showLogin() {
+            loginForm.style.display = 'block';
+            signupForm.style.display = 'none';
+            authTitle.textContent = 'Login';
+            toggleText.innerHTML = `Don't have an account? <a href="#" id="toggleLink">Sign up</a>`;
+            if (forgotPassword) forgotPassword.style.display = 'inline-block';
+            document.getElementById('toggleLink').onclick = function(e) {
+                e.preventDefault();
+                showSignup();
+            };
+        }
+        function showSignup() {
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+            authTitle.textContent = 'Sign Up';
+            toggleText.innerHTML = `Already have an account? <a href="#" id="toggleLink">Login</a>`;
+            if (forgotPassword) forgotPassword.style.display = 'none';
+            document.getElementById('toggleLink').onclick = function(e) {
+                e.preventDefault();
+                showLogin();
+            };
+        }
+        // Initial binding
+        if (toggleLink) {
+            toggleLink.onclick = function(e) {
+                e.preventDefault();
+                showSignup();
+            };
+        }
+
+        // Department field toggle for signup
+        function toggleDepartmentField() {
+            const roleSelect = document.getElementById('signupRole');
+            const departmentGroup = document.getElementById('departmentGroup');
+            if (roleSelect.value === 'employee') {
+                departmentGroup.style.display = 'block';
+            } else {
+                departmentGroup.style.display = 'none';
+            }
+        }
+        // Initialize department field on load
+        toggleDepartmentField();
+
+        // LocalStorage user logic (same as before)
+        if (!localStorage.getItem('users')) {
+            const defaultUsers = [
+                { 
+                    username: "manager", 
+                    password: "manager123", 
+                    role: "manager", 
+                    name: "Admin Manager",
+                    department: "Management"
+                },
+                { 
+                    username: "john", 
+                    password: "john123", 
+                    role: "employee", 
+                    name: "John Doe",
+                    department: "Development"
+                }
+            ];
+            localStorage.setItem('users', JSON.stringify(defaultUsers));
+        }
+
+        // Handle form submissions
+        document.addEventListener('submit', function(e) {
+            if (e.target.id === 'signupForm') {
+                e.preventDefault();
+                const name = document.getElementById('signupName').value;
+                const role = document.getElementById('signupRole').value;
+                const username = document.getElementById('signupUsername').value;
+                const password = document.getElementById('signupPassword').value;
+                const department = role === 'employee' ? document.getElementById('signupDepartment').value : 'Management';
+
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                if (users.some(u => u.username === username)) {
+                    alert('Username already exists!');
+                    return;
+                }
+                users.push({
+                    username,
+                    password,
+                    role,
+                    name,
+                    department
+                });
+                localStorage.setItem('users', JSON.stringify(users));
+                alert('Account created successfully! Please login.');
+                showLogin();
+            } else if (e.target.id === 'loginForm') {
+                e.preventDefault();
+                const username = document.getElementById('loginUsername').value;
+                const password = document.getElementById('loginPassword').value;
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                // Login by username only
+                const user = users.find(u => 
+                    u.username === username && 
+                    u.password === password
+                );
+                if (user) {
+                    sessionStorage.setItem('currentUser', JSON.stringify(user));
+                    window.location.href = user.role === 'manager' ? 'manager.html' : 'employee.html';
+                } else {
+                    alert('Invalid credentials. Please try again.');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

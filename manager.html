@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+        :root {
+            --black: #2A363B;
+            --red: #F67280;
+            --red-dark: #C06C84;
+            --orange: #F8B195;
+            --yellow: #FECEAB;
+            --white: #FFF;
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --success: #4cc9f0;
+            --warning: #ffd166;
+            --danger: #f72585;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        *:before, *:after {
+            box-sizing: inherit;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            background: linear-gradient(135deg, #2c3e50 0%, #4a5568 100%);
+            margin: 0;
+            padding: 0;
+        }
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 240px;
+            background: white;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            padding: 32px 0 0 0;
+            transition: var(--transition);
+        }
+        .sidebar .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4361ee;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .sidebar nav {
+            flex: 1;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar ul li {
+            margin-bottom: 16px;
+        }
+        .sidebar ul li a {
+            display: block;
+            color: var(--gray-700);
+            text-decoration: none;
+            padding: 12px 32px;
+            border-radius: 8px 0 0 8px;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar ul li a:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: var(--transition);
+        }
+        .sidebar ul li a:hover:before,
+        .sidebar ul li a.active:before {
+            transform: scaleY(1);
+        }
+        .sidebar ul li a.active, 
+        .sidebar ul li a:hover {
+            background: var(--gray-100);
+            color: var(--primary);
+            padding-left: 36px;
+        }
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .topbar {
+            height: 64px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .topbar .title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .topbar .title:before {
+            content: '📊';
+            font-size: 1.8rem;
+        }
+        .topbar .logout-btn {
+            padding: 8px 20px;
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .topbar .logout-btn:before {
+            content: '🚪';
+        }
+        .topbar .logout-btn:hover {
+            background: var(--red-dark);
+            transform: translateY(-2px);
+        }
+        .content {
+            flex: 1;
+            padding: 32px;
+        }
+        .panel {
+            background: white;
+            padding: 24px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 32px;
+            transition: var(--transition);
+        }
+        .panel:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+        h2 {
+            color: #4361ee;
+            margin-bottom: 18px;
+        }
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        th {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+        tr:hover {
+            background: var(--gray-100);
+        }
+        /* Responsive */
+        @media (max-width: 900px) {
+            .dashboard { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                height: 64px;
+                padding: 0;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+            .sidebar .logo { display: none; }
+            .sidebar nav { flex: 1; }
+            .sidebar ul { display: flex; flex-direction: row; justify-content: space-around; }
+            .sidebar ul li { margin: 0; }
+            .sidebar ul li a { padding: 12px 16px; border-radius: var(--border-radius); }
+            .sidebar ul li a:before { width: 100%; height: 4px; top: auto; bottom: 0; }
+            .main { padding-top: 64px; }
+            .content { padding: 16px; }
+        }
+        .assign-work-panel {
+            max-width: 600px;
+            margin: 0 auto 32px auto;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+        .assign-work-panel h2 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary);
+            margin-bottom: 24px;
+        }
+        .assign-work-panel h2:before {
+            content: '📝';
+            font-size: 1.4rem;
+        }
+        .form-row {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 18px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            color: var(--gray-700);
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            margin-bottom: 8px;
+            background: var(--gray-100);
+            transition: var(--transition);
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            background: white;
+        }
+        .file-upload {
+            border: 2px dashed var(--primary);
+            padding: 24px;
+            text-align: center;
+            border-radius: var(--border-radius);
+            background: var(--gray-100);
+            cursor: pointer;
+            margin-bottom: 16px;
+            color: var(--primary);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        .file-upload:hover {
+            background: var(--gray-200);
+            border-color: var(--primary-light);
+        }
+        .assign-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 16px;
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .assign-btn:before {
+            content: '✅';
+        }
+        .assign-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+        .success-message {
+            color: var(--success);
+            text-align: center;
+            margin-top: 16px;
+            font-weight: 600;
+            padding: 12px;
+            background: var(--gray-100);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .success-message:before {
+            content: '🎉';
+        }
+        @media (max-width: 700px) {
+            .form-row { flex-direction: column; gap: 0; }
+        }
+        /* Employee Details Box */
+        .employee-details-box {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 24px 24px 16px 24px;
+            margin-bottom: 32px;
+            display: flex;
+            flex-direction: column;
+            height: 200px; /* Fixed height */
+        }
+        .employee-scroll-row {
+            display: flex;
+            gap: 32px;
+            padding-bottom: 8px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            overflow-y: auto;
+            max-height: calc(100% - 40px); /* Subtract header height */
+        }
+        .employee-card {
+            min-width: 120px;
+            text-align: center;
+            flex: 0 0 auto;
+            padding: 8px;
+            transition: transform 0.2s ease;
+        }
+        .employee-card:hover {
+            transform: translateY(-2px);
+        }
+        .employee-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #4361ee;
+            margin: 0 auto 8px auto;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .employee-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #222;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
+        .employee-status {
+            font-size: 0.95rem;
+            color: #888;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
+        /* Custom scrollbar for employee section */
+        .employee-scroll-row::-webkit-scrollbar {
+            width: 6px;
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        .employee-scroll-row::-webkit-scrollbar-thumb {
+            background: #4361ee;
+            border-radius: 3px;
+        }
+        .employee-scroll-row::-webkit-scrollbar-thumb:hover {
+            background: #3f37c9;
+        }
+        .employee-scroll-row {
+            scrollbar-width: thin;
+            scrollbar-color: #4361ee #f1f1f1;
+        }
+        /* Calendar Box */
+        .calendar-panel {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        .calendar-panel h2 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary);
+            margin-bottom: 24px;
+        }
+        .calendar-panel h2:before {
+            content: '📅';
+            font-size: 1.4rem;
+        }
+        #calendar {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        .dashboard-content {
+            display: flex;
+            gap: 32px;
+        }
+        .dashboard-left {
+            flex: 0 0 340px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+        .dashboard-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+        @media (max-width: 1100px) {
+            .dashboard-content { flex-direction: column; }
+            .dashboard-left, .dashboard-main { flex: 1 1 100%; }
+        }
+        /* Employee Status Bar Graph */
+        .bar-graph {
+            width: 100%;
+            padding: 16px 0 8px 0;
+        }
+        .bar-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .bar-label {
+            width: 110px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-right: 12px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .bar-track {
+            flex: 1;
+            background: var(--gray-200);
+            border-radius: 8px;
+            height: 22px;
+            position: relative;
+            margin-right: 12px;
+            overflow: hidden;
+        }
+        .bar-fill {
+            background: linear-gradient(90deg, var(--primary) 60%, var(--primary-light) 100%);
+            height: 100%;
+            border-radius: 8px;
+            transition: width 0.6s cubic-bezier(.4,2,.3,1);
+            position: relative;
+        }
+        .bar-fill:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                rgba(255,255,255,0.1) 0%,
+                rgba(255,255,255,0.2) 50%,
+                rgba(255,255,255,0.1) 100%
+            );
+        }
+        .bar-value {
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 600;
+            min-width: 32px;
+            text-align: left;
+        }
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .status-completed {
+            background: var(--success);
+            color: white;
+        }
+        .status-in-progress {
+            background: var(--warning);
+            color: var(--gray-800);
+        }
+        .status-pending {
+            background: var(--gray-300);
+            color: var(--gray-700);
+        }
+        /* Custom Calendar Styles */
+        .custom-calendar-container {
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 0;
+            flex-wrap: wrap;
+        }
+        .custom-calendar-base {
+            flex: 1 1 600px;
+            min-width: 320px;
+            max-width: 700px;
+            height: 420px;
+            border-radius: 20px;
+            background-color: white;
+            position: relative;
+            color: black;
+            margin: 0 0 0 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 24px 16px 16px 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        .custom-calendar-year {
+            color: #E8E8E8;
+            font-size: 30px;
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .custom-calendar-triangle-left, .custom-calendar-triangle-right {
+            width: 0;
+            height: 0;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            display: inline-block;
+            margin: 0 4px;
+            cursor: pointer;
+        }
+        .custom-calendar-triangle-left {
+            border-right: 10px solid #E8E8E8;
+        }
+        .custom-calendar-triangle-right {
+            border-left: 10px solid #E8E8E8;
+        }
+        .custom-calendar-triangle-left:hover{
+            border-right: 10px solid #2ECC71;
+        }
+        .custom-calendar-triangle-right:hover{
+            border-left: 10px solid #2ECC71;
+        }
+        .custom-calendar-month-color {
+            color: #27AE60;
+        }
+        .custom-calendar-month-hover:hover{
+            color:#27e879 !important;
+        }
+        .custom-calendar-months {
+            color: #AAAAAA;
+            text-align: center;
+            margin: 0 auto;
+            margin-top: 24px;
+            word-spacing: 10px;
+            font-size: 1.1rem;
+        }
+        .custom-calendar-month-line {
+            border-color: #E8E8E8;
+            margin: 16px auto 0 auto;
+            width: 80%;
+        }
+        .custom-calendar-days {
+            color: #AAAAAA;
+            font-size: 1rem;
+            text-align: center;
+            margin-top: 16px;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+        }
+        .custom-calendar-num-dates {
+            margin: 24px auto 0 auto;
+            text-align: center;
+            font-size: 1.1rem;
+            line-height: 2.2;
+        }
+        .custom-calendar-first-week, .custom-calendar-second-week, .custom-calendar-third-week, .custom-calendar-fourth-week, .custom-calendar-fifth-week, .custom-calendar-sixth-week {
+            margin-bottom: 0;
+            word-spacing: 0.7em;
+        }
+        .custom-calendar-active-day {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #2ECC71;
+            position: absolute;
+            top: 260px;
+            left: 70%;
+            transform: translateX(-50%);
+        }
+        .custom-calendar-white {
+            color: white;
+        }
+        .custom-calendar-event-indicator {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background-color: #2980B9;
+            position: absolute;
+            top: 270px;
+            left: 80%;
+        }
+        .custom-calendar-two {
+            top: 180px !important;
+            left: 60% !important;
+        }
+        .custom-calendar-grey {
+            color: #AAAAB1;
+        }
+        .custom-calendar-left {
+            flex: 0 0 220px;
+            min-width: 220px;
+            height: 420px;
+            border-radius: 20px 0px 0px 20px;
+            background-color: #2ECC71;
+            color: white;
+            margin-left: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            padding: 24px 12px 12px 12px;
+            box-sizing: border-box;
+        }
+        .custom-calendar-hamburger {
+            margin-bottom: 16px;
+        }
+        .custom-calendar-burger-line {
+            width: 25px;
+            height: 3px;
+            background-color: white;
+            border-radius: 15%;
+            margin-bottom: 3px;
+        }
+        .custom-calendar-num-date {
+            font-size: 80px;
+            font-weight: 700;
+            margin: 0 auto 0 0;
+        }
+        .custom-calendar-day {
+            font-size: 1.5rem;
+            margin: 0 auto 0 0;
+            font-weight: 600;
+        }
+        .custom-calendar-current-events {
+            font-size: 1rem;
+            margin: 16px 0 0 0;
+        }
+        .custom-calendar-posts {
+            text-decoration: underline dotted;
+            cursor: pointer;
+        }
+        .custom-calendar-posts:hover{
+            color:#27e879 !important;
+        }
+        .custom-calendar-create-event {
+            font-size: 1.1rem;
+            margin: 24px 0 0 0;
+            cursor: pointer;
+        }
+        .custom-calendar-event-line {
+            width: 90%;
+            border: 1px solid #fff;
+            margin: 16px 0;
+        }
+        .custom-calendar-add-event {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: solid white 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 0 0 auto;
+            cursor: pointer;
+        }
+        .custom-calendar-add {
+            font-size: 1.5rem;
+            color: white;
+            font-weight: bold;
+        }
+        .custom-calendar-add:hover, .custom-calendar-create-event:hover, .custom-calendar-add-event:hover{
+            color:#27e879 !important;
+            border-color: #27e879 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo">WMS</div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="active" onclick="showSection('dashboard', event)">Dashboard</a></li>
+                    <li><a href="#" onclick="showSection('tasks', event)">Tasks</a></li>
+                    <li><a href="#" onclick="showSection('employees', event)">Employee Status</a></li>
+                    <li><a href="#" onclick="showSection('projects', event)">Projects</a></li>
+                    <li><a href="#" onclick="showSection('calender', event)">Calender</a></li>
+                    <li><a href="#" onclick="logout()">Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <div class="main">
+            <div class="topbar">
+                <span class="title">Manager Dashboard</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <div class="content">
+                <div id="dashboard" class="content-section active">
+                    <div class="dashboard-content">
+                        <div class="dashboard-left">
+                            <div class="panel assign-work-panel">
+                                <h2><span style="vertical-align:middle;"></span> Assign Work</h2>
+                                <form id="assignWorkForm" onsubmit="assignTask(); return false;">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="employeeSelect">Employee</label>
+                                            <select id="employeeSelect" required>
+                                                <option value="">Select Employee</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="projectName">Project Name</label>
+                                            <input type="text" id="projectName" placeholder="Enter project name" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="taskDescription">Task Description</label>
+                                            <textarea id="taskDescription" rows="3" placeholder="Enter task details" required></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="dueDate">Due Date</label>
+                                            <input type="date" id="dueDate" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Attach Files</label>
+                                        <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                                            <input type="file" id="fileInput" multiple style="display: none" onchange="handleFileSelect(event)">
+                                            <p>Click or drag files here to upload</p>
+                                        </div>
+                                        <div id="fileList" class="file-list"></div>
+                                    </div>
+                                    <button type="submit" class="assign-btn">Assign Task</button>
+                                    <div id="assignSuccess" class="success-message" style="display:none;">Task assigned successfully!</div>
+                                </form>
+                            </div>
+                            <div class="panel">
+                                <h2>Employee Status</h2>
+                                <table id="employeeStatusTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee Name</th>
+                                            <th>Current Tasks</th>
+                                            <th>Completed Tasks</th>
+                                            <th>Performance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="dashboard-main">
+                            <div class="employee-details-box">
+                                <div style="font-size:1.2rem;font-weight:600;margin-bottom:12px;">Employees</div>
+                                <div class="employee-scroll-row" id="employeeScrollRow">
+                                    <!-- Employee avatars will be injected here -->
+                                </div>
+                            </div>
+                            <div class="calendar-panel">
+                                <div style="font-size:1.2rem;font-weight:600;margin-bottom:12px;">Team Calendar</div>
+                                <div id="calendar"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <h2>Current Assignments</h2>
+                        <table id="assignmentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Project</th>
+                                    <th>Task</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                    <th>Files</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="tasks" class="content-section" style="display:none;">
+                    <div class="panel">
+                        <h2>Task Management</h2>
+                        <table id="tasksTable">
+                            <thead>
+                                <tr>
+                                    <th>Project</th>
+                                    <th>Task</th>
+                                    <th>Assigned To</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="employees" class="content-section" style="display:none;">
+                    <div class="panel">
+                        <h2>Employee Status</h2>
+                        <table id="employeeStatusTable">
+                            <thead>
+                                <tr>
+                                    <th>Employee Name</th>
+                                    <th>Current Tasks</th>
+                                    <th>Completed Tasks</th>
+                                    <th>Performance</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="projects" class="content-section" style="display:none;">
+                    <div class="panel">
+                        <h2>Project Overview</h2>
+                        <table id="projectsTable">
+                            <thead>
+                                <tr>
+                                    <th>Project Name</th>
+                                    <th>Team Members</th>
+                                    <th>Progress</th>
+                                    <th>Deadline</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="calender" class="content-section" style="display:none;">
+                    <div class="panel">
+                        <h2>Team Calender</h2>
+                        <!-- Refactored Custom Calendar UI -->
+                        <div class="custom-calendar-container">
+                            <div class="custom-calendar-base">
+                                <div class="custom-calendar-year">2017</div>
+                                <div class="custom-calendar-triangle-left"></div>
+                                <div class="custom-calendar-triangle-right"></div>
+                                <div class="custom-calendar-months">
+                                    <span class="custom-calendar-month-hover">Jan</span>
+                                    <span class="custom-calendar-month-hover">Feb</span>
+                                    <span class="custom-calendar-month-hover">Mar</span>
+                                    <strong class="custom-calendar-month-color">Apr</strong>
+                                    <span class="custom-calendar-month-hover">May</span>
+                                    <span class="custom-calendar-month-hover">Jun</span>
+                                    <span class="custom-calendar-month-hover">July</span>
+                                    <span class="custom-calendar-month-hover">Aug</span>
+                                    <span class="custom-calendar-month-hover">Sep</span>
+                                    <span class="custom-calendar-month-hover">Oct</span>
+                                    <span class="custom-calendar-month-hover">Nov</span>
+                                    <span class="custom-calendar-month-hover">Dec</span>
+                                </div>
+                                <hr class="custom-calendar-month-line" />
+                                <div class="custom-calendar-days">SUN MON TUE WED THU FRI SAT</div>
+                                <div class="custom-calendar-num-dates">
+                                    <div class="custom-calendar-first-week"><span class="custom-calendar-grey">26 27 28 29 30 31</span> 01</div>
+                                    <div class="custom-calendar-second-week">02 03 04 05 06 07 08</div>
+                                    <div class="custom-calendar-third-week"> 09 10 11 12 13 14 15</div>
+                                    <div class="custom-calendar-fourth-week"> 16 17 18 19 20 21 22</div>
+                                    <div class="custom-calendar-fifth-week"> 23 24 25 26 <strong class="custom-calendar-white">27</strong> 28 29</div>
+                                    <div class="custom-calendar-sixth-week"> 30 <span class="custom-calendar-grey">01 02 03 04 05 06</span></div>
+                                </div>
+                                <div class="custom-calendar-event-indicator"></div>
+                                <div class="custom-calendar-active-day"></div>
+                                <div class="custom-calendar-event-indicator custom-calendar-two"></div>
+                            </div>
+                            <div class="custom-calendar-left">
+                                <div class="custom-calendar-hamburger">
+                                    <div class="custom-calendar-burger-line"></div>
+                                    <div class="custom-calendar-burger-line"></div>
+                                    <div class="custom-calendar-burger-line"></div>
+                                </div>
+                                <div class="custom-calendar-num-date">27</div>
+                                <div class="custom-calendar-day">THURSDAY</div>
+                                <div class="custom-calendar-current-events">Current Events<br/>
+                                    <ul>
+                                        <li>Day 09 Daily CSS Image</li>
+                                    </ul>
+                                    <span class="custom-calendar-posts">See post events</span></div>
+                                <div class="custom-calendar-create-event">Create an Event</div>
+                                <hr class="custom-calendar-event-line" />
+                                <div class="custom-calendar-add-event"><span class="custom-calendar-add">+</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script>
+        // Add session check at the start
+        const user = JSON.parse(sessionStorage.getItem('currentUser'));
+        if (!user || user.role !== 'manager') {
+            window.location.href = 'index.html';
+        }
+
+        let selectedFiles = [];
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+        const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            const fileList = document.getElementById('fileList');
+            
+            for (let file of files) {
+                // Check file size
+                if (file.size > MAX_FILE_SIZE) {
+                    showError(`File ${file.name} is too large. Maximum size is 5MB.`);
+                    continue;
+                }
+
+                // Check file type
+                if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+                    showError(`File ${file.name} is not an allowed type. Allowed types: JPG, PNG, PDF, DOC, DOCX`);
+                    continue;
+                }
+
+                selectedFiles.push(file);
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span>${file.name}</span>
+                    <button onclick="removeFile('${file.name}')">Remove</button>
+                `;
+                fileList.appendChild(fileItem);
+            }
+        }
+
+        function removeFile(fileName) {
+            selectedFiles = selectedFiles.filter(file => file.name !== fileName);
+            updateFileList();
+        }
+
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            selectedFiles.forEach(file => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span>${file.name}</span>
+                    <button onclick="removeFile('${file.name}')">Remove</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        // Load employees and assignments on page load
+        window.onload = function() {
+            loadEmployees();
+            loadAssignments();
+            loadTasks();
+            loadEmployeeStatus();
+            loadProjects();
+            updateTeamUI();
+        };
+
+        function loadEmployees() {
+            const employeeSelect = document.getElementById('employeeSelect');
+            const users = JSON.parse(localStorage.getItem('users'));
+            
+            // Clear existing options except the first one
+            while (employeeSelect.options.length > 1) {
+                employeeSelect.remove(1);
+            }
+            
+            // Add employee options
+            users.forEach(user => {
+                if (user.role === 'employee') {
+                    const option = document.createElement('option');
+                    option.value = user.username;
+                    option.textContent = user.name || user.username;
+                    employeeSelect.appendChild(option);
+                }
+            });
+        }
+
+        function assignTask() {
+            try {
+                const employeeSelect = document.getElementById('employeeSelect');
+                const projectName = document.getElementById('projectName');
+                const taskDescription = document.getElementById('taskDescription');
+                const dueDate = document.getElementById('dueDate');
+                
+                if (!employeeSelect.value || !projectName.value || !taskDescription.value || !dueDate.value) {
+                    showError('Please fill all fields');
+                    return;
+                }
+
+                // Validate due date
+                const selectedDate = new Date(dueDate.value);
+                const today = new Date();
+                if (selectedDate < today) {
+                    showError('Due date cannot be in the past');
+                    return;
+                }
+                
+                const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+                
+                // Convert files to base64 strings with error handling
+                const filePromises = Array.from(selectedFiles).map(file => {
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve({
+                            name: file.name,
+                            data: reader.result
+                        });
+                        reader.onerror = () => reject(new Error(`Failed to read file ${file.name}`));
+                        reader.readAsDataURL(file);
+                    });
+                });
+
+                Promise.all(filePromises)
+                    .then(files => {
+                        assignments.push({
+                            employee: employeeSelect.options[employeeSelect.selectedIndex].text,
+                            employeeUsername: employeeSelect.value,
+                            project: projectName.value,
+                            task: taskDescription.value,
+                            dueDate: dueDate.value,
+                            status: 'Pending',
+                            assignedDate: new Date().toISOString().split('T')[0],
+                            files: files,
+                            assignedBy: user.username // Track who assigned the task
+                        });
+                        
+                        localStorage.setItem('assignments', JSON.stringify(assignments));
+                        
+                        // Clear form
+                        projectName.value = '';
+                        taskDescription.value = '';
+                        dueDate.value = '';
+                        selectedFiles = [];
+                        updateFileList();
+                        
+                        // Show success message
+                        const successDiv = document.getElementById('assignSuccess');
+                        successDiv.style.display = 'flex';
+                        setTimeout(() => successDiv.style.display = 'none', 3000);
+                        
+                        // Refresh tables
+                        loadAssignments();
+                        updateTeamUI();
+                    })
+                    .catch(error => {
+                        showError(error.message);
+                    });
+            } catch (error) {
+                showError('An error occurred while assigning the task');
+                console.error(error);
+            }
+        }
+
+        function loadAssignments() {
+            const tableBody = document.querySelector('#assignmentsTable tbody');
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            
+            tableBody.innerHTML = '';
+            
+            assignments.forEach((assignment, index) => {
+                const row = document.createElement('tr');
+                
+                const filesHtml = assignment.files ? assignment.files.map(file => 
+                    `<div class="file-item">
+                        <span class="file-icon">📎</span>
+                        <a href="#" onclick="downloadFile('${file.name}', '${file.data}')" class="file-link">${file.name}</a>
+                    </div>`
+                ).join('<br>') : '';
+                
+                row.innerHTML = `
+                    <td>${assignment.employee}</td>
+                    <td>${assignment.project}</td>
+                    <td>${assignment.task}</td>
+                    <td>${assignment.dueDate}</td>
+                    <td>${assignment.status}</td>
+                    <td>${filesHtml}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        function downloadFile(fileName, fileData) {
+            // Convert base64 to blob
+            const byteCharacters = atob(fileData.split(',')[1]);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray]);
+
+            // Create download link
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function logout() {
+            // Clear all session storage
+            sessionStorage.clear();
+            
+            // Clear all local storage items related to the current user
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (currentUser) {
+                const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+                const schedules = JSON.parse(localStorage.getItem('schedules')) || [];
+                const forwardedProjects = JSON.parse(localStorage.getItem('forwardedProjects')) || [];
+                
+                // Remove user-specific data
+                const updatedAssignments = assignments.filter(task => task.assignedBy !== currentUser.username);
+                const updatedSchedules = schedules.filter(schedule => schedule.assignedBy !== currentUser.username);
+                const updatedForwardedProjects = forwardedProjects.filter(project => project.forwardedBy !== currentUser.username);
+                
+                // Update localStorage
+                localStorage.setItem('assignments', JSON.stringify(updatedAssignments));
+                localStorage.setItem('schedules', JSON.stringify(updatedSchedules));
+                localStorage.setItem('forwardedProjects', JSON.stringify(updatedForwardedProjects));
+            }
+            
+            // Redirect to login page
+            window.location.replace('index.html');
+        }
+
+        function showSection(sectionId, event) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+                section.style.display = 'none';
+            });
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            document.getElementById(sectionId).style.display = '';
+            // Update active menu item
+            document.querySelectorAll('.sidebar ul li a').forEach(link => {
+                link.classList.remove('active');
+            });
+            if(event) event.target.classList.add('active');
+
+            // Load section specific data
+            if (sectionId === 'employees') {
+                loadEmployeeStatus();
+            } else if (sectionId === 'calender') {
+                renderManagerMenuCalender();
+            }
+        }
+
+        function loadTasks() {
+            const tableBody = document.querySelector('#tasksTable tbody');
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            
+            tableBody.innerHTML = '';
+            assignments.forEach(task => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${task.project}</td>
+                    <td>${task.task}</td>
+                    <td>${task.employeeName || task.employeeUsername}</td>
+                    <td>${task.dueDate}</td>
+                    <td><span class="status-badge status-${task.status.toLowerCase().replace(' ', '-')}">${task.status}</span></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function loadEmployeeStatus() {
+            const tableBody = document.querySelectorAll('#employeeStatusTable tbody');
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            // Update both tables (dashboard and employee status section)
+            tableBody.forEach(body => {
+                body.innerHTML = '';
+                users.forEach(user => {
+                    if (user.role === 'employee') {
+                        const employeeTasks = assignments.filter(a => a.employeeUsername === user.username);
+                        const completedTasks = employeeTasks.filter(t => t.status === 'Completed').length;
+                        const inProgressTasks = employeeTasks.filter(t => t.status === 'In Progress').length;
+                        const pendingTasks = employeeTasks.filter(t => t.status === 'Pending').length;
+                        
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.name || user.username}</td>
+                            <td>${employeeTasks.length}</td>
+                            <td>${completedTasks}</td>
+                            <td>
+                                <div class="bar-graph">
+                                    <div class="bar-row">
+                                        <div class="bar-label">Completed</div>
+                                        <div class="bar-track">
+                                            <div class="bar-fill" style="width: ${(completedTasks/employeeTasks.length)*100 || 0}%"></div>
+                                        </div>
+                                        <div class="bar-value">${completedTasks}</div>
+                                    </div>
+                                    <div class="bar-row">
+                                        <div class="bar-label">In Progress</div>
+                                        <div class="bar-track">
+                                            <div class="bar-fill" style="width: ${(inProgressTasks/employeeTasks.length)*100 || 0}%"></div>
+                                        </div>
+                                        <div class="bar-value">${inProgressTasks}</div>
+                                    </div>
+                                    <div class="bar-row">
+                                        <div class="bar-label">Pending</div>
+                                        <div class="bar-track">
+                                            <div class="bar-fill" style="width: ${(pendingTasks/employeeTasks.length)*100 || 0}%"></div>
+                                        </div>
+                                        <div class="bar-value">${pendingTasks}</div>
+                                    </div>
+                                </div>
+                            </td>
+                        `;
+                        body.appendChild(row);
+                    }
+                });
+            });
+        }
+
+        function loadProjects() {
+            const tableBody = document.querySelector('#projectsTable tbody');
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            
+            // Get unique projects
+            const projects = [...new Set(assignments.map(a => a.project))];
+            
+            tableBody.innerHTML = '';
+            projects.forEach(project => {
+                const projectTasks = assignments.filter(a => a.project === project);
+                const completedTasks = projectTasks.filter(t => t.status === 'Completed').length;
+                const progress = calculatePerformance(completedTasks, projectTasks.length);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${project}</td>
+                    <td>${[...new Set(projectTasks.map(t => t.employee))].join(', ')}</td>
+                    <td>${progress}%</td>
+                    <td>${getLatestDueDate(projectTasks)}</td>
+                    <td>${getProjectStatus(progress)}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function calculatePerformance(completed, total) {
+            if (total === 0) return 0;
+            return Math.round((completed / total) * 100);
+        }
+
+        function getLatestDueDate(tasks) {
+            if (tasks.length === 0) return 'N/A';
+            return tasks.reduce((latest, task) => 
+                task.dueDate > latest ? task.dueDate : latest, tasks[0].dueDate);
+        }
+
+        function getProjectStatus(progress) {
+            if (progress === 100) return 'Completed';
+            if (progress >= 75) return 'On Track';
+            if (progress >= 50) return 'In Progress';
+            return 'At Risk';
+        }
+
+        function updateTaskStatus(index) {
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            const statuses = ['Pending', 'In Progress', 'Completed'];
+            const currentStatus = assignments[index].status;
+            const currentIndex = statuses.indexOf(currentStatus);
+            const nextStatus = statuses[(currentIndex + 1) % statuses.length];
+            
+            assignments[index].status = nextStatus;
+            localStorage.setItem('assignments', JSON.stringify(assignments));
+            
+            loadTasks();
+            loadEmployeeStatus();
+            loadProjects();
+        }
+
+        // Employee Details Box Logic
+        function renderEmployeeDetails() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            const row = document.getElementById('employeeScrollRow');
+            row.innerHTML = '';
+            users.filter(u => u.role === 'employee').forEach(emp => {
+                // Count tasks for this employee
+                const empTasks = assignments.filter(a => a.employee === emp.username);
+                const overdue = empTasks.filter(a => a.dueDate && new Date(a.dueDate) < new Date() && a.status !== 'Completed').length;
+                const initials = emp.name ? emp.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2) : emp.username.slice(0,2).toUpperCase();
+                const card = document.createElement('div');
+                card.className = 'employee-card';
+                card.innerHTML = `
+                    <div class="employee-avatar">${initials}</div>
+                    <div class="employee-name">${emp.name || emp.username}</div>
+                    <div class="employee-status">${empTasks.length} tasks${overdue ? ', <span style=\'color:#f72585\'>'+overdue+' overdue</span>' : ''}</div>
+                `;
+                row.appendChild(card);
+            });
+        }
+
+        // Calendar Logic
+        let calendar;
+        function renderCalendar() {
+            try {
+                const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+                const events = assignments.map(a => ({
+                    title: (a.project ? a.project+': ' : '') + (a.task || ''),
+                    start: a.dueDate,
+                    description: a.task,
+                    employee: a.employee,
+                    backgroundColor: getStatusColor(a.status)
+                }));
+
+                if (calendar) calendar.destroy();
+                calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+                    initialView: 'dayGridMonth',
+                    height: 500,
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    events: events,
+                    eventClick: function(info) {
+                        alert('Task: ' + info.event.title + '\nEmployee: ' + (info.event.extendedProps.employee || 'N/A'));
+                    },
+                    eventTimeFormat: {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        meridiem: false,
+                        hour12: false
+                    }
+                });
+                calendar.render();
+            } catch (error) {
+                showError('Failed to load calendar');
+                console.error(error);
+            }
+        }
+
+        function getStatusColor(status) {
+            switch(status.toLowerCase()) {
+                case 'completed': return '#4cc9f0';
+                case 'in progress': return '#ffd166';
+                case 'pending': return '#adb5bd';
+                default: return '#4361ee';
+            }
+        }
+
+        // Restore original updateTeamUI
+        function updateTeamUI() {
+            renderEmployeeDetails();
+            renderCalendar();
+            loadEmployeeStatus();
+        }
+
+        // New calender for manager menu section
+        function renderManagerMenuCalender() {
+            if (window.managerMenuCalenderInstance) {
+                window.managerMenuCalenderInstance.destroy();
+            }
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            const events = assignments.map(a => ({
+                title: (a.project ? a.project+': ' : '') + (a.task || ''),
+                start: a.dueDate,
+                description: a.task,
+                employee: a.employee,
+                backgroundColor: getStatusColor(a.status)
+            }));
+            const calenderEl = document.getElementById('managerMenuCalender');
+            calenderEl.innerHTML = '';
+            window.managerMenuCalenderInstance = new FullCalendar.Calendar(calenderEl, {
+                initialView: 'dayGridMonth',
+                height: 600,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: events,
+                eventClick: function(info) {
+                    alert('Task: ' + info.event.title + '\nEmployee: ' + (info.event.extendedProps.employee || 'N/A'));
+                },
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    meridiem: false,
+                    hour12: false
+                }
+            });
+            window.managerMenuCalenderInstance.render();
+        }
+
+        // Add error message styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .error-message {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--danger);
+                color: white;
+                padding: 12px 24px;
+                border-radius: var(--border-radius);
+                box-shadow: var(--shadow);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            }
+            @keyframes slideIn {
+                from { transform: translateX(100%); }
+                to { transform: translateX(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
